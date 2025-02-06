@@ -20,13 +20,30 @@ dynamodb = boto3.resource(
 # Connect to Users table
 table = dynamodb.Table("Users")
 
+# Function for printing all items in the table
+def print_table(Table = table):
+    response = Table.scan()
+    print("Users Table:")
+    for item in response["Items"]:
+        print(item)
+
 # Insert an item
 table.put_item(
     Item={"user_id": "u005", "name": "Emily", "age": 32, "city": "San Francisco"}
 )
+print("Item inserted successfully!")
 
+
+# Insert item with different attributes
+
+table.put_item(
+    Item={"user_id": "u006", "name": "Francois", "age": "unknown", "city": "Paris", "job": "Engineer"}
+)
 print("Item inserted successfully!")
 
 # Retrieve the item
-response = table.get_item(Key={"user_id": "u005"})
+response = table.get_item(Key={"user_id": "u006"})
 print("Retrieved User:", response["Item"])
+
+# Print the table
+print_table(table)
