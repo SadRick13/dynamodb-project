@@ -1,0 +1,5 @@
+[
+    {"user_id": "u008", "name": "Frank", "age": 19, "city": "Berlin"},
+    {"user_id": "u009", "name": "Fred", "age": 22, "city": "Amsterdam"},
+    {"user_id": "u010", "name": "Frodo", "age": 58, "city": "The Shite"}
+]
