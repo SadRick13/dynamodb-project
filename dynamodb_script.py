@@ -1,3 +1,5 @@
+import json
+import sys
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 import os
@@ -70,23 +72,39 @@ def print_table(table,max_items=100):
 
 
 
-# Insert an item
-table.put_item(
-    Item={"user_id": "u005", "name": "Emily", "age": 32, "city": "San Francisco"}
-)
-print("Item inserted successfully!")
+# Function to batch insert items
+def batch_insert_items(items):
+    try:
+        with table.batch_writer() as batch:
+            for item in items:
+                batch.put_item(Item=item)
+        print(f"✅ Successfully inserted {len(items)} items.")
+    except (BotoCoreError, ClientError) as e:
+        print(f"❌ Error inserting items: {e}")
 
 
-# Insert item with different attributes
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python dynamodb_script.py <path_to_json_file>")
+        return
 
-table.put_item(
-    Item={"user_id": "u006", "name": "Francois", "age": "unknown", "city": "Paris", "job": "Engineer"}
-)
-print("Item inserted successfully!")
+    # load items from the JSON file
+    json_file = sys.argv[1]
+    try:
+        with open(json_file, "r") as file:
+            items = json.load(file)
+            if isinstance(items, dict):
+                items = [items]
+            batch_insert_items(items)
+    except Exception as e:
+        print(f"Error reading JSON file: {e}")
 
-# Retrieve the item
-response = table.get_item(Key={"user_id": "u006"})
-print("Retrieved User:", response["Item"])
+    # Insert items to the DB
+    batch_insert_items(items)
 
-# Print the table
-print_table(table, max_items=10)
+    # Print the table
+    print_table(table, max_items=10)
+
+
+if __name__ == '__main__':
+    main()
