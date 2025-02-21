@@ -78,7 +78,7 @@ def get_user(user_id=None, name=None, city=None, age=None):
         filter_expression_str = " AND ".join(filter_expression)
         response = table.scan(
             FilterExpression=filter_expression_str,
-            ExpressionAttributeValues={"#name": "name", "#city": "city", "#age": "age"},
+            ExpressionAttributeNames={"#name": "name", "#city": "city", "#age": "age"},
             ExpressionAttributeValues=expression_values
         )
         users = response.get("Items", [])
@@ -97,6 +97,7 @@ subparsers = parser.add_subparsers(dest="command", required=True)
 add_parser = subparsers.add_parser("add", help="Add a new user")
 add_parser.add_argument("--user_id", required=True, help="User ID")
 add_parser.add_argument("--name", required=True, help="User name")
+add_parser.add_argument("--age", required=False, type=int, help="User age")
 add_parser.add_argument("--city", required=True, help="User city")
 
 # Get command
@@ -115,7 +116,8 @@ args = parser.parse_args()
 
 # Execute the correct function based on the subcommand
 if args.command == "add":
-    add_user(args.user_id, args.name, args.city)
+    print("DEBUG: Arguments Received:", args)  # Debugging
+    add_user(args.user_id, args.name, args.age, args.city)
 elif args.command == "get":
     get_user(args.user_id, args.name, args.city, args.age)
 elif args.command == "delete":
